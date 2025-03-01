@@ -98,17 +98,10 @@ public class MainMenu {
         Scanner scanner = new Scanner(System.in);
         int opt = scanner.nextInt();
         switch (opt) {
-            case 1:
-                selectAll();
-                break;
-            case 2:
-                selectByTime();
-                break;
-            case 3:
-                selectByType();
-                break;
-            default:
-                System.out.println("请重新输入");
+            case 1 -> selectAll();
+            case 2 -> selectByTime();
+            case 3 -> selectByType();
+            default -> System.out.println("请重新输入");
         }
     showMenu();
 
