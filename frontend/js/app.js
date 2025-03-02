@@ -1,14 +1,14 @@
 // 后端API基础地址
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080/suishouji';
 
 // 添加账务
-async function addBill() {
+async function addBills() {
     const amount = document.getElementById('amount').value;
     const type = document.getElementById('type').value;
     const date = document.getElementById('date').value;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/bills`, {
+        const response = await fetch(`${API_BASE_URL}/src/MainMenu`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

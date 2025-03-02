@@ -1,3 +1,7 @@
+package service;
+
+import service.Bills;
+
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -5,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class MainMenu {
     static ArrayList<Bills> billsList = new ArrayList<>();

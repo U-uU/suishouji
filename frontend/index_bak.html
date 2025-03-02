@@ -2,182 +2,104 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>随手记账</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #recordList {
-            margin-top: 20px;
-        }
-        .record-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .income {
-            color: green;
-        }
-        .expense {
-            color: red;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-    <h2>随手记账</h2>
+<body class="bg-gray-100 font-sans">
+<div class="container mx-auto px-4 py-8 max-w-xl">
+    <div class="bg-white shadow-lg rounded-2xl p-6">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">随手记账</h1>
 
-    <select id="type">
-        <option value="expense">支出</option>
-        <option value="income">收入</option>
-    </select>
+        <!-- 添加账务卡片 -->
+        <div class="bg-blue-50 rounded-xl p-4 mb-6">
+            <h2 class="text-xl font-semibold text-blue-700 mb-4">添加账务</h2>
+            <div class="space-y-4">
+                <select
+                        id="type"
+                        class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="expense">支出</option>
+                    <option value="income">收入</option>
+                </select>
+                <input
+                        type="number"
+                        id="amount"
+                        placeholder="金额"
+                        class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <input
+                        type="date"
+                        id="date"
+                        class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button
+                        onclick="addBills()"
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                >
+                    添加账务
+                </button>
+            </div>
+        </div>
 
-    <input type="number" id="amount" placeholder="金额" min="0" step="0.01">
+        <!-- 账务列表 -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">账务列表</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white shadow rounded-lg overflow-hidden">
+                    <thead class="bg-blue-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-blue-700">金额</th>
+                        <th class="px-4 py-3 text-left text-blue-700">类型</th>
+                        <th class="px-4 py-3 text-left text-blue-700">日期</th>
+                        <th class="px-4 py-3 text-left text-blue-700">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="billTableBody" class="divide-y divide-gray-200">
+                    <!-- 动态生成的账务记录 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <select id="category">
-        <optgroup label="支出类别">
-            <option value="食品">食品</option>
-            <option value="交通">交通</option>
-            <option value="娱乐">娱乐</option>
-            <option value="购物">购物</option>
-            <option value="其他">其他</option>
-        </optgroup>
-        <optgroup label="收入类别">
-            <option value="工资">工资</option>
-            <option value="奖金">奖金</option>
-            <option value="兼职">兼职</option>
-            <option value="其他收入">其他收入</option>
-        </optgroup>
-    </select>
-
-    <input type="date" id="date" value="">
-
-    <button onclick="addRecord()">记一笔</button>
-
-    <div id="recordList"></div>
-
-    <div>
-        <h3>总结</h3>
-        <p>总收入: <span id="totalIncome">0</span></p>
-        <p>总支出: <span id="totalExpense">0</span></p>
-        <p>结余: <span id="balance">0</span></p>
+        <!-- 查询区域 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">账务查询</h2>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input
+                            type="date"
+                            id="startDate"
+                            placeholder="开始日期"
+                            class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <input
+                            type="date"
+                            id="endDate"
+                            placeholder="结束日期"
+                            class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                <select
+                        id="searchType"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">全部类型</option>
+                    <option value="income">收入</option>
+                    <option value="expense">支出</option>
+                </select>
+                <button
+                        onclick="searchBills()"
+                        class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                >
+                    查询账务
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-    // 初始化日期为今天
-    document.getElementById('date').valueAsDate = new Date();
-
-    // 记录数组
-    let records = JSON.parse(localStorage.getItem('accountRecords')) || [];
-
-    // 渲染记录
-    function renderRecords() {
-        const recordList = document.getElementById('recordList');
-        const totalIncomeEle = document.getElementById('totalIncome');
-        const totalExpenseEle = document.getElementById('totalExpense');
-        const balanceEle = document.getElementById('balance');
-
-        // 清空之前的记录
-        recordList.innerHTML = '';
-
-        let totalIncome = 0;
-        let totalExpense = 0;
-
-        // 倒序显示最新记录
-        records.reverse().forEach((record, index) => {
-            const recordEle = document.createElement('div');
-            recordEle.classList.add('record-item');
-
-            const typeClass = record.type === 'income' ? 'income' : 'expense';
-            const amount = record.type === 'income' ? '+' : '-';
-
-            recordEle.innerHTML = `
-                    <span>${record.date} | ${record.category}</span>
-                    <span class="${typeClass}">${amount}${record.amount}</span>
-                    <button onclick="deleteRecord(${records.length - index_bak - 1})">删除</button>
-                `;
-
-            recordList.appendChild(recordEle);
-
-            // 计算总收支
-            if (record.type === 'income') {
-                totalIncome += parseFloat(record.amount);
-            } else {
-                totalExpense += parseFloat(record.amount);
-            }
-        });
-
-        // 还原回正序
-        records.reverse();
-
-        // 更新总结
-        totalIncomeEle.textContent = totalIncome.toFixed(2);
-        totalExpenseEle.textContent = totalExpense.toFixed(2);
-        balanceEle.textContent = (totalIncome - totalExpense).toFixed(2);
-    }
-
-    // 添加记录
-    function addRecord() {
-        const type = document.getElementById('type').value;
-        const amount = document.getElementById('amount').value;
-        const category = document.getElementById('category').value;
-        const date = document.getElementById('date').value;
-
-        if (!amount) {
-            alert('请输入金额');
-            return;
-        }
-
-        const record = { type, amount, category, date };
-        records.push(record);
-
-        // 保存到本地存储
-        localStorage.setItem('accountRecords', JSON.stringify(records));
-
-        // 重置输入
-        document.getElementById('amount').value = '';
-
-        // 重新渲染
-        renderRecords();
-    }
-
-    // 删除记录
-    function deleteRecord(index) {
-        records.splice(index_bak, 1);
-        localStorage.setItem('accountRecords', JSON.stringify(records));
-        renderRecords();
-    }
-
-    // 初始渲染
-    renderRecords();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
