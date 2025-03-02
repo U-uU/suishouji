@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>随手记账</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #recordList {
+            margin-top: 20px;
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .income {
+            color: green;
+        }
+        .expense {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>随手记账</h2>
+
+    <select id="type">
+        <option value="expense">支出</option>
+        <option value="income">收入</option>
+    </select>
+
+    <input type="number" id="amount" placeholder="金额" min="0" step="0.01">
+
+    <select id="category">
+        <optgroup label="支出类别">
+            <option value="食品">食品</option>
+            <option value="交通">交通</option>
+            <option value="娱乐">娱乐</option>
+            <option value="购物">购物</option>
+            <option value="其他">其他</option>
+        </optgroup>
+        <optgroup label="收入类别">
+            <option value="工资">工资</option>
+            <option value="奖金">奖金</option>
+            <option value="兼职">兼职</option>
+            <option value="其他收入">其他收入</option>
+        </optgroup>
+    </select>
+
+    <input type="date" id="date" value="">
+
+    <button onclick="addRecord()">记一笔</button>
+
+    <div id="recordList"></div>
+
+    <div>
+        <h3>总结</h3>
+        <p>总收入: <span id="totalIncome">0</span></p>
+        <p>总支出: <span id="totalExpense">0</span></p>
+        <p>结余: <span id="balance">0</span></p>
+    </div>
+</div>
+
+<script>
+    // 初始化日期为今天
+    document.getElementById('date').valueAsDate = new Date();
+
+    // 记录数组
+    let records = JSON.parse(localStorage.getItem('accountRecords')) || [];
+
+    // 渲染记录
+    function renderRecords() {
+        const recordList = document.getElementById('recordList');
+        const totalIncomeEle = document.getElementById('totalIncome');
+        const totalExpenseEle = document.getElementById('totalExpense');
+        const balanceEle = document.getElementById('balance');
+
+        // 清空之前的记录
+        recordList.innerHTML = '';
+
+        let totalIncome = 0;
+        let totalExpense = 0;
+
+        // 倒序显示最新记录
+        records.reverse().forEach((record, index) => {
+            const recordEle = document.createElement('div');
+            recordEle.classList.add('record-item');
+
+            const typeClass = record.type === 'income' ? 'income' : 'expense';
+            const amount = record.type === 'income' ? '+' : '-';
+
+            recordEle.innerHTML = `
+                    <span>${record.date} | ${record.category}</span>
+                    <span class="${typeClass}">${amount}${record.amount}</span>
+                    <button onclick="deleteRecord(${records.length - index_bak - 1})">删除</button>
+                `;
+
+            recordList.appendChild(recordEle);
+
+            // 计算总收支
+            if (record.type === 'income') {
+                totalIncome += parseFloat(record.amount);
+            } else {
+                totalExpense += parseFloat(record.amount);
+            }
+        });
+
+        // 还原回正序
+        records.reverse();
+
+        // 更新总结
+        totalIncomeEle.textContent = totalIncome.toFixed(2);
+        totalExpenseEle.textContent = totalExpense.toFixed(2);
+        balanceEle.textContent = (totalIncome - totalExpense).toFixed(2);
+    }
+
+    // 添加记录
+    function addRecord() {
+        const type = document.getElementById('type').value;
+        const amount = document.getElementById('amount').value;
+        const category = document.getElementById('category').value;
+        const date = document.getElementById('date').value;
+
+        if (!amount) {
+            alert('请输入金额');
+            return;
+        }
+
+        const record = { type, amount, category, date };
+        records.push(record);
+
+        // 保存到本地存储
+        localStorage.setItem('accountRecords', JSON.stringify(records));
+
+        // 重置输入
+        document.getElementById('amount').value = '';
+
+        // 重新渲染
+        renderRecords();
+    }
+
+    // 删除记录
+    function deleteRecord(index) {
+        records.splice(index_bak, 1);
+        localStorage.setItem('accountRecords', JSON.stringify(records));
+        renderRecords();
+    }
+
+    // 初始渲染
+    renderRecords();
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +24,9 @@ public class MainMenu {
         billsList.add(
                 new Bills("家电","建行","支出",2000.0,"2024-01-01","买个电视"));
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        ArrayList<Bills> billsListFrom = readFromCSV();
+        billsList.addAll(billsListFrom);
         run();
     }
 
@@ -55,6 +58,12 @@ public class MainMenu {
                 default -> System.out.println("请重新输入：");
             }
         }
+        // 退出系统前保存数据
+        try {
+            saveMenuToCSV(billsList);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("退出系统");
 
     }
@@ -68,7 +77,7 @@ public class MainMenu {
         showMenu();
     }
 
-    private static void addBills() {
+    private static void addBills(){
         System.out.println("随手记>>添加账务");
         Scanner scanner = new Scanner(System.in);
         Bills bills = new Bills();
@@ -86,6 +95,11 @@ public class MainMenu {
         bills.setDesc(scanner.next());
 
         billsList.add(bills);
+        try {
+            saveMenuToCSV(billsList);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("添加账务成功！");
         showMenu();
     }
@@ -155,5 +169,49 @@ public class MainMenu {
             Bills bills = billsList.get(i);
             System.out.println(i+1+"\t\t"+bills.getName()+"\t\t"+bills.getAccount()+"\t\t"+bills.getType()+"\t\t"+bills.getTotal()+"\t\t"+bills.getTime()+"\t\t"+bills.getDesc());
         }
+    }
+    // 写入文件
+    public static void saveMenuToCSV(List<Bills> accounts) throws FileNotFoundException {
+        try (PrintWriter writer = new PrintWriter("bills.csv")) {
+            for (int i = 0; i < accounts.size(); i++) {
+                writer.println(
+                        i + "," +
+                                accounts.get(i).getName() + "," +
+                                accounts.get(i).getAccount() + "," +
+                                accounts.get(i).getType() + "," +
+                                accounts.get(i).getTotal() + "," +
+                                accounts.get(i).getTime() + "," +
+                                accounts.get(i).getDesc() + ","
+                );
+            }
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException();
+        }
+    }
+
+    // 读取文件
+    public static ArrayList<Bills> readFromCSV() {
+        File file = new File("./bills.csv");
+
+        // 如果文件不存在则创建
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        ArrayList<Bills> accounts = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("bills.csv"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                Bills account = new Bills(data[0], data[1], data[2], Double.parseDouble(data[3]), data[4], data[5]);
+                accounts.add(account);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return accounts;
     }
 }
