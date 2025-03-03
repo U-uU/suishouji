@@ -1,9 +1,10 @@
-package com.memourmoney.service;
+package com.memourmoney.dto;
 
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-@Service
-public class Bills {
+@Data
+public class BillsDTO {
+    private Long id;
     private String name;
     private String account;
     private String type;
@@ -11,16 +12,15 @@ public class Bills {
     private String time;
     private String desc;
 
-    public Bills() {
+    public BillsDTO() {
     }
 
-    public Bills(String name, String account, String type, double total, String time, String desc) {
-        this.name = name;
-        this.account = account;
-        this.type = type;
-        this.total = total;
-        this.time = time;
-        this.desc = desc;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

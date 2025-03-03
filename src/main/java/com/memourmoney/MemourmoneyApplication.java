@@ -1,6 +1,6 @@
 package com.memourmoney;
 
-import com.memourmoney.service.MainMenu;
+import com.memourmoney.service.MainMenuServiceImpl;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +16,8 @@ public class MemourmoneyApplication {
 
     CommandLineRunner run() {
         return args -> {
-            MainMenu.main();
+            MainMenuServiceImpl menu = new MainMenuServiceImpl();
+            menu.main();
         };
     }
 

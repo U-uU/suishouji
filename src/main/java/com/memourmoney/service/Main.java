@@ -7,8 +7,9 @@ import java.io.FileNotFoundException;
 @Service
 public class Main {
     public static void main(String[] args) {
+        MainMenuServiceImpl menu = new MainMenuServiceImpl();
         try {
-            MainMenu.main();
+            menu.main();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

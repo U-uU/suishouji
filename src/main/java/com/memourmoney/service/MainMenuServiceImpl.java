@@ -1,18 +1,20 @@
 package com.memourmoney.service;
 
+import com.memourmoney.model.Bills;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 @Service
-public class MainMenu {
-    public MainMenu() {
+public class MainMenuServiceImpl implements MainMenuService{
+    public MainMenuServiceImpl() {
     }
 
     static ArrayList<Bills> billsList = new ArrayList<>();
@@ -31,7 +33,7 @@ public class MainMenu {
 //        billsList.add(
 //                new Bills("家电","建行","支出",2000.0,"2024-01-01","买个电视"));
 //    }
-    public static void main() throws FileNotFoundException {
+    public void main() throws FileNotFoundException {
         ArrayList<Bills> billsListFrom = readFromCSV();
         billsList.addAll(billsListFrom);
         run();
@@ -42,7 +44,7 @@ public class MainMenu {
         System.out.println("1.添加账务  2.删除账务  3.查询账务  4.退出系统");
         System.out.println("请输入功能序号【1-4】");
     }
-    public static void run(){
+    public void run(){
         showMenu();
         Scanner scanner = new Scanner(System.in);
         boolean flag = true;
@@ -75,7 +77,7 @@ public class MainMenu {
 
     }
 
-    private static void deleteBills() {
+    public void deleteBills() {
         System.out.println("随手记>>删除账务");
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入要删除第几条账务");
@@ -84,7 +86,7 @@ public class MainMenu {
         showMenu();
     }
 
-    private static void addBills(){
+    public void addBills(){
         System.out.println("随手记>>添加账务");
         Scanner scanner = new Scanner(System.in);
         Bills bills = new Bills();
@@ -97,7 +99,7 @@ public class MainMenu {
         System.out.println("请输入金额：");
         bills.setTotal(scanner.nextDouble());
         System.out.println("请输入时间：");
-        bills.setTime(scanner.next());
+        bills.setTime(LocalDate.parse(scanner.next()));
         System.out.println("请输入备注：");
         bills.setDesc(scanner.next());
 
@@ -112,7 +114,7 @@ public class MainMenu {
     }
 
     //查询账务
-    public static void select() {
+    public void select() {
         System.out.println("随手记>>账务查询");
         System.out.println("请选择您要查询的类型:");
         System.out.println("1.查询所有  2.按照时间区间查询  3.按照收入和支出的类型查询");
@@ -150,18 +152,8 @@ public class MainMenu {
         System.out.println("请输入结束时间：");
         String end = scanner.next();
         List<Bills> billsList1 = billsList.stream().filter(bills -> {
-            String time = bills.getTime();
-            try {
-                Date startDate = format.parse(start);
-                Date endDate = format.parse(end);
-                Date timeDate = format.parse(time);
-                if (timeDate.before(endDate) && timeDate.after(startDate)) {
-                    return true;
-                }
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            return false;
+            LocalDate time = bills.getTime();
+            return time.isBefore(LocalDate.parse(end)) && time.isAfter(LocalDate.parse(start));
         }).toList();
         print(billsList1);
     }
@@ -213,7 +205,7 @@ public class MainMenu {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                Bills account = new Bills(data[0], data[1], data[2], Double.parseDouble(data[3]), data[4], data[5]);
+                Bills account = new Bills(Long.parseLong(data[0]), data[1], data[2], data[3], Double.parseDouble(data[4]), LocalDate.parse(data[5]), data[6]);
                 accounts.add(account);
             }
         } catch (IOException e) {
