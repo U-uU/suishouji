@@ -1,5 +1,8 @@
-package service;
+package com.memourmoney.service;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class Bills {
     private String name;
     private String account;

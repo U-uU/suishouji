@@ -1,6 +1,6 @@
-package service;
+package com.memourmoney.service;
 
-import service.Bills;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.text.ParseException;
@@ -10,24 +10,28 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+@Service
 public class MainMenu {
+    public MainMenu() {
+    }
+
     static ArrayList<Bills> billsList = new ArrayList<>();
     // 类加载时第一时间执行，向billsList中添加初始化的数据
-    static {
-        billsList.add(
-                new Bills("吃饭","现金","支出",234.0,"2023-09-18","聚会"));
-        billsList.add(
-                new Bills("工资","交行","收入",4330.0,"2023-10-18","开工资"));
-        billsList.add(
-                new Bills("吃饭","现金","支出",22.0,"2023-08-29","吃饭"));
-        billsList.add(
-                new Bills("衣服","现金","支出",431.0,"2023-09-11","约会"));
-        billsList.add(
-                new Bills("吃饭","现金","支出",24.0,"2023-08-11","聚会"));
-        billsList.add(
-                new Bills("家电","建行","支出",2000.0,"2024-01-01","买个电视"));
-    }
-    public static void main(String[] args) throws FileNotFoundException {
+//    static {
+//        billsList.add(
+//                new Bills("吃饭","现金","支出",234.0,"2023-09-18","聚会"));
+//        billsList.add(
+//                new Bills("工资","交行","收入",4330.0,"2023-10-18","开工资"));
+//        billsList.add(
+//                new Bills("吃饭","现金","支出",22.0,"2023-08-29","吃饭"));
+//        billsList.add(
+//                new Bills("衣服","现金","支出",431.0,"2023-09-11","约会"));
+//        billsList.add(
+//                new Bills("吃饭","现金","支出",24.0,"2023-08-11","聚会"));
+//        billsList.add(
+//                new Bills("家电","建行","支出",2000.0,"2024-01-01","买个电视"));
+//    }
+    public static void main() throws FileNotFoundException {
         ArrayList<Bills> billsListFrom = readFromCSV();
         billsList.addAll(billsListFrom);
         run();
