@@ -8,11 +8,7 @@ import java.io.FileNotFoundException;
 public class Main {
     public static void main(String[] args) {
         MainMenuServiceImpl menu = new MainMenuServiceImpl();
-        try {
-            menu.main();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        menu.main();
 
     }
 }

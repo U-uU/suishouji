@@ -1,6 +1,9 @@
 package com.memourmoney.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 public class BillsDTO {
@@ -9,7 +12,8 @@ public class BillsDTO {
     private String account;
     private String type;
     private double total;
-    private String time;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate time;
     private String desc;
 
     public BillsDTO() {
@@ -55,11 +59,11 @@ public class BillsDTO {
         this.total = total;
     }
 
-    public String getTime() {
+    public LocalDate getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalDate time) {
         this.time = time;
     }
 

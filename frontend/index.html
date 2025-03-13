@@ -9,7 +9,7 @@
 <div class="container">
     <h2 style="color: coral;text-align: center">随手记</h2>
 
-    <select id="category">
+    <select id="name">
         <optgroup label="支出类别">
             <option value="食品">食品</option>
             <option value="交通">交通</option>
@@ -39,17 +39,17 @@
 
     <input
             type="number"
-            id="amount"
+            id="total"
             placeholder="金额"
             min="0"
             step="0.01">
 
 
-    <input type="date" id="date" value="">
+    <input type="date" id="time" value="">
 
     <input type="text" id="desc" value="">
 
-    <button onclick="addBills()">记一笔</button>
+    <button onclick="loadBills()">记一笔</button>
 
     <div id="recordList"></div>
 
@@ -60,6 +60,26 @@
         <p>结余: <span id="balance">0</span></p>
     </div>
 </div>
+
+<h1>账单数据展示</h1>
+<button id="fetchButton" onclick="loadBills()">获取账单数据</button>
+<table id="billTable" style="display: table;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>名称</th>
+        <th>账户</th>
+        <th>类别</th>
+        <th>金额</th>
+        <th>日期</th>
+        <th>备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 账单数据将动态插入到这里 -->
+    </tbody>
+</table>
+
 
 <script src="js/app.js"></script>
 </body>

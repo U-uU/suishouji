@@ -1,14 +1,14 @@
 package com.memourmoney.service;
 
+import com.memourmoney.dto.BillsDTO;
 import com.memourmoney.model.Bills;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,25 +18,11 @@ public class MainMenuServiceImpl implements MainMenuService{
     }
 
     static ArrayList<Bills> billsList = new ArrayList<>();
-    // 类加载时第一时间执行，向billsList中添加初始化的数据
-//    static {
-//        billsList.add(
-//                new Bills("吃饭","现金","支出",234.0,"2023-09-18","聚会"));
-//        billsList.add(
-//                new Bills("工资","交行","收入",4330.0,"2023-10-18","开工资"));
-//        billsList.add(
-//                new Bills("吃饭","现金","支出",22.0,"2023-08-29","吃饭"));
-//        billsList.add(
-//                new Bills("衣服","现金","支出",431.0,"2023-09-11","约会"));
-//        billsList.add(
-//                new Bills("吃饭","现金","支出",24.0,"2023-08-11","聚会"));
-//        billsList.add(
-//                new Bills("家电","建行","支出",2000.0,"2024-01-01","买个电视"));
-//    }
-    public void main() throws FileNotFoundException {
+    public static void main(){
         ArrayList<Bills> billsListFrom = readFromCSV();
         billsList.addAll(billsListFrom);
-        run();
+        MainMenuServiceImpl menu = new MainMenuServiceImpl();
+//        menu.run();
     }
 
     public static void showMenu(){
@@ -44,65 +30,49 @@ public class MainMenuServiceImpl implements MainMenuService{
         System.out.println("1.添加账务  2.删除账务  3.查询账务  4.退出系统");
         System.out.println("请输入功能序号【1-4】");
     }
-    public void run(){
-        showMenu();
-        Scanner scanner = new Scanner(System.in);
-        boolean flag = true;
-        while(flag) {
-            int opt = scanner.nextInt();
-            switch (opt) {
-                case 1 -> {
-                    System.out.println("已选择：添加账务");
-                    addBills();
-                }
-                case 2 -> {
-                    System.out.println("已选择：删除账务");
-                    deleteBills();
-                }
-                case 3 -> {
-                    System.out.println("已选择：查询账务");
-                    select();
-                }
-                case 4 -> flag = false;
-                default -> System.out.println("请重新输入：");
-            }
-        }
-        // 退出系统前保存数据
-        try {
-            saveMenuToCSV(billsList);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("退出系统");
+//    public void run(){
+//        showMenu();
+//        Scanner scanner = new Scanner(System.in);
+//        boolean flag = true;
+//        while(flag) {
+//            int opt = scanner.nextInt();
+//            switch (opt) {
+//                case 1 -> {
+//                    System.out.println("已选择：添加账务");
+//                    addBills();
+//                }
+//                case 2 -> {
+//                    System.out.println("已选择：删除账务");
+//                    deleteBills();
+//                }
+//                case 3 -> {
+//                    System.out.println("已选择：查询账务");
+//                    select();
+//                }
+//                case 4 -> flag = false;
+//                default -> System.out.println("请重新输入：");
+//            }
+//        }
+//        // 退出系统前保存数据
+//        try {
+//            saveMenuToCSV(billsList);
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//        System.out.println("退出系统");
+//
+//    }
 
-    }
-
-    public void deleteBills() {
-        System.out.println("随手记>>删除账务");
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("请输入要删除第几条账务");
-        int opt = scanner.nextInt();
+    @Override
+    public List<BillsDTO> deleteBills(Long opt) {
         billsList.remove(opt - 1);
-        showMenu();
+        return billsList.stream().map(this::convertToDTO).toList();
     }
 
-    public void addBills(){
-        System.out.println("随手记>>添加账务");
-        Scanner scanner = new Scanner(System.in);
+    @Override
+    public List<BillsDTO> addBills(BillsDTO billsDTO){
         Bills bills = new Bills();
-        System.out.println("请输入账务类别(用途)：");
-        bills.setName(scanner.next());
-        System.out.println("请输入账户：");
-        bills.setAccount(scanner.next());
-        System.out.println("请输入类型：");
-        bills.setType(scanner.next());
-        System.out.println("请输入金额：");
-        bills.setTotal(scanner.nextDouble());
-        System.out.println("请输入时间：");
-        bills.setTime(LocalDate.parse(scanner.next()));
-        System.out.println("请输入备注：");
-        bills.setDesc(scanner.next());
-
+        BeanUtils.copyProperties(billsDTO, bills);
         billsList.add(bills);
         try {
             saveMenuToCSV(billsList);
@@ -110,57 +80,63 @@ public class MainMenuServiceImpl implements MainMenuService{
             throw new RuntimeException(e);
         }
         System.out.println("添加账务成功！");
-        showMenu();
+        return billsList.stream().map(this::convertToDTO).toList();
     }
 
     //查询账务
-    public void select() {
-        System.out.println("随手记>>账务查询");
-        System.out.println("请选择您要查询的类型:");
-        System.out.println("1.查询所有  2.按照时间区间查询  3.按照收入和支出的类型查询");
-        Scanner scanner = new Scanner(System.in);
-        int opt = scanner.nextInt();
-        switch (opt) {
-            case 1 -> selectAll();
-            case 2 -> selectByTime();
-            case 3 -> selectByType();
-            default -> System.out.println("请重新输入");
-        }
-    showMenu();
+//    public void select() {
+//        System.out.println("随手记>>账务查询");
+//        System.out.println("请选择您要查询的类型:");
+//        System.out.println("1.查询所有  2.按照时间区间查询  3.按照收入和支出的类型查询");
+//        Scanner scanner = new Scanner(System.in);
+//        int opt = scanner.nextInt();
+//        switch (opt) {
+//            case 1 -> selectAll();
+//            case 2 -> selectByTime();
+//            case 3 -> selectByType();
+//            default -> System.out.println("请重新输入");
+//        }
+//    showMenu();
+//
+//    }
 
-    }
-
-    private static void selectByType() {
-        System.out.println("随手记>>账务查询>>按照类型查询");
-        System.out.println("请输入查询类型：收入or支出");
-        Scanner scanner = new Scanner(System.in);
-        String type = scanner.next();
-        List<Bills> billsList1 = billsList.stream()
+    // 随手记>>账务查询>>按照类型查询(收入/支出)
+    @Override
+    public List<BillsDTO> selectByType(String type) {
+        List<Bills> billsListSelectedByType = billsList.stream()
                 .filter(bills -> {
                     String type1 = bills.getType();
                     return type1.equals(type);
         }).toList();
-        print(billsList1);
+        return billsListSelectedByType.stream().map(this::convertToDTO).toList();
     }
 
-    private static void selectByTime() {
-        System.out.println("随手记>>账务查询>>按照时间查询");
-        Scanner scanner = new Scanner(System.in);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println("请输入开始时间：");
-        String start = scanner.next();
-        System.out.println("请输入结束时间：");
-        String end = scanner.next();
-        List<Bills> billsList1 = billsList.stream().filter(bills -> {
+    @Override
+    public List<BillsDTO> selectByTime(LocalDate start, LocalDate end) {
+        List<Bills> billsListSelectedByTime = billsList.stream().filter(bills -> {
             LocalDate time = bills.getTime();
-            return time.isBefore(LocalDate.parse(end)) && time.isAfter(LocalDate.parse(start));
+            return time.isBefore(end) && time.isAfter(start);
         }).toList();
-        print(billsList1);
+        return billsListSelectedByTime.stream().map(this::convertToDTO).toList();
     }
 
-    private static void selectAll() {
+    @Override
+    public List<BillsDTO> selectByTime(LocalDate selectTime) {
+        List<Bills> billsListSelectedByTime = billsList.stream().filter(bills -> {
+            LocalDate time = bills.getTime();
+            return time.isEqual(selectTime);
+        }).toList();
+        return billsListSelectedByTime.stream().map(this::convertToDTO).toList();
+    }
+
+    public List<BillsDTO> selectAll() {
+        if (billsList.isEmpty()) {
+            ArrayList<Bills> billsListFrom = readFromCSV();
+            billsList.addAll(billsListFrom);
+        }
         System.out.println("已选择：查询所有");
         print(billsList);
+        return billsList.stream().map(this::convertToDTO).toList();
     }
     public static void print(List<Bills> billsList){
         System.out.println("ID\t\t类别\t\t账户\t\t类型\t\t金额\t\t\t时间\t\t\t\t备注");
@@ -191,11 +167,12 @@ public class MainMenuServiceImpl implements MainMenuService{
     // 读取文件
     public static ArrayList<Bills> readFromCSV() {
         File file = new File("./bills.csv");
+        Boolean bool;
 
         // 如果文件不存在则创建
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                bool = file.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -203,14 +180,27 @@ public class MainMenuServiceImpl implements MainMenuService{
         ArrayList<Bills> accounts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("bills.csv"))) {
             String line;
+            reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                Bills account = new Bills(Long.parseLong(data[0]), data[1], data[2], data[3], Double.parseDouble(data[4]), LocalDate.parse(data[5]), data[6]);
+                Bills account = new Bills(Long.parseLong(data[0]),
+                        data[1],
+                        data[2],
+                        data[3],
+                        Double.parseDouble(data[4]),
+                        LocalDate.parse(data[5]),
+                        data[6]);
                 accounts.add(account);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return accounts;
+    }
+
+    private BillsDTO convertToDTO(Bills bills) {
+        BillsDTO billsDTO = new BillsDTO();
+        BeanUtils.copyProperties(bills, billsDTO);
+        return billsDTO;
     }
 }

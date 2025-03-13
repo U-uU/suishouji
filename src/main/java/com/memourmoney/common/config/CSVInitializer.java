@@ -1,4 +1,4 @@
-package com.memourmoney.config;
+package com.memourmoney.common.config;
 
 import com.opencsv.CSVWriter;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Component
 public class CSVInitializer {
-    public static final String CSV_FILE_PATH = "/bills.csv";
+    public static final String CSV_FILE_PATH = "bills.csv";
     @PostConstruct
     public void initializeCSV() {
         File file = new File(CSV_FILE_PATH);
