@@ -40,16 +40,17 @@
     <input
             type="number"
             id="total"
-            placeholder="金额"
+            placeholder="请输入金额"
             min="0"
-            step="0.01">
+            step="0.01"
+    >
 
 
     <input type="date" id="time" value="">
 
     <input type="text" id="desc" value="">
 
-    <button onclick="loadBills()">记一笔</button>
+    <button onclick="addBills()">记一笔</button>
 
     <div id="recordList"></div>
 
@@ -61,8 +62,8 @@
     </div>
 </div>
 
-<h1>账单数据展示</h1>
-<button id="fetchButton" onclick="loadBills()">获取账单数据</button>
+<h2 style="text-align: center; color: #ee8242">账单数据展示</h2>
+<button id="fetchButton" onclick="loadBills()">获取全部账单数据</button>
 <table id="billTable" style="display: table;">
     <thead>
     <tr>
